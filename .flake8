@@ -1,0 +1,6 @@
+[flake8]
+doctests = True
+max-complexity = 10
+enable-extension = hacking
+show-source = True
+statistics = True
