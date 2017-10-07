@@ -3,36 +3,13 @@
 import os
 
 import plivoxml
+from firebase import firebase
 from flask import Flask, Response, request, url_for
+
+firebaseClient = firebase.FirebaseApplication(os.getenv('FIREBASE_URL'), None)
 
 # This is the message that Plivo reads when the caller does nothing at all
 NO_INPUT_MESSAGE = "Sorry, I didn't catch that. Please hangup and try again later."
-
-PHONE_NUMBER = '1234567890'
-PASSCODE = '4293'
-
-speed_dial = {
-    '1': {
-        'name': 'Manraj Singh',
-        'number': '+919811040427'
-    },
-    '2': {
-        'name': 'Papa',
-        'number': '+919414071598',
-    },
-    '3': {
-        'name': 'Last Dialed',
-        'number': '+919624040633',
-    },
-    '4': {
-        'name': 'Anurag Agarwal',
-        'number': '+917405352413',
-    },
-    '*': {
-        'name': 'Last Dialed',
-        'number': '+919624040633',
-    },
-}
 
 app = Flask(__name__)
 
@@ -80,7 +57,12 @@ def authenticate():
     phone_number = request.args.get('phone_number')
     passcode = request.form.get('Digits')
 
-    if phone_number != PHONE_NUMBER or passcode != PASSCODE:
+    user = firebaseClient.get('/totp', None, params={
+        'number': phone_number,
+        'passcode': passcode,
+    })
+
+    if user is None:
         return exit_sequence('Authentication failed')
 
     response = plivoxml.Response()
@@ -99,10 +81,15 @@ def main_menu():
     phone_number = request.args.get('phone_number')
     option = request.form.get('Digits')
 
-    to_call = speed_dial.get(option, None)
+    to_call = firebaseClient.get('/speed_dials', None, params={
+        'user_number': phone_number,
+        'key_choice': option,
+    })
 
     if to_call is None:
-        return exit_sequence()
+        return exit_sequence('No number exists to call')
+
+    to_call = to_call.values()[0]
 
     response = plivoxml.Response()
     response.addSpeak('Connecting %s' % to_call['name'])
