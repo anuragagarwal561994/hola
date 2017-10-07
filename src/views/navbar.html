@@ -1,0 +1,39 @@
+<div ng-controller="navController">
+  <div ng-show="session.authenticated">
+    <div class="sidebar" data-background-color="white" data-active-color="danger">
+      <div class="sidebar-wrapper">
+        <div class="logo">
+          <a ng-click="goto('/dashboard', 'dashboard')" class="simple-text">
+            Hola
+          </a>
+        </div>
+        <ul class="nav">
+          <li ng-class="session.activePage === 'dashboard' ? 'active': ''" ng-click="goto('/dashboard', 'dashboard')">
+            <a class="cursor">
+                <i class="ti-panel"></i>
+                <p>Dashboard</p>
+            </a>
+          </li>
+          <li ng-class="session.activePage === 'billing' ? 'active': ''" ng-click="goto('/billing', 'billing')">
+            <a class="cursor">
+                <i class="ti-receipt"></i>
+                <p>Billing</p>
+            </a>
+          </li>
+          <li ng-class="session.activePage === 'speeddial' ? 'active': ''" ng-click="goto('/speeddial', 'speeddial')">
+            <a class="cursor">
+                <i class="ti-bolt-alt"></i>
+                <p>Speed Dial</p>
+            </a>
+          </li>
+          <li ng-class="session.activePage === 'payments' ? 'active': ''" ng-click="goto('/payments', 'payments')">
+            <a class="cursor">
+                <i class="ti-wallet"></i>
+                <p>Payment</p>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

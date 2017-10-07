@@ -1,0 +1,8 @@
+.loader {
+  transition: 2s;
+  width: 100px;
+}
+
+.cursor {
+  cursor: pointer;
+}
