@@ -364,8 +364,6 @@ app.controller("speeddialController", /*@ngInject*/ function($scope, $location, 
         var name = jQuery('#' + $scope.dial[i].name).val();
         var number = jQuery('#' + $scope.dial[i].speed_number_prefix).val();
 
-        number = number.replace(/^(\+91)/, "");
-
         console.log('lol', number, name);
 
         if (snapshot.val() === null && number !== '' && name !== '') {
@@ -406,9 +404,8 @@ app.controller("dashboardController", /*@ngInject*/ function($scope, $location, 
 
     queriedDbRef.on('value', (snapshot) => {
       if (snapshot.val() === null) {
-        number = session.phoneNumber.replace(/^(\+91)/, "");
         querybaseRef.push({
-          number: number,
+          number: session.phoneNumber,
           user_id: session.uid,
           passcode: $scope.strongSecret,
           name: $scope.name,
