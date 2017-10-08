@@ -58,7 +58,7 @@ def authenticate():
     passcode = request.form.get('Digits')
 
     user = firebaseClient.get('/totp', None, params={
-        'number': phone_number,
+        'number': '+91' + phone_number,
         'passcode': passcode,
     })
 
