@@ -325,7 +325,7 @@ app.controller("speeddialController", /*@ngInject*/ function($scope, $location, 
     queriedDbRef.on('value', (snapshot) => {
       const val = snapshot.val();
 
-      if (val !== null ) {
+      if (val !== null) {
         const key = Object.keys(val)[0];
 
         console.log('Here2', $scope.dial[keychoice].name);
@@ -406,8 +406,9 @@ app.controller("dashboardController", /*@ngInject*/ function($scope, $location, 
 
     queriedDbRef.on('value', (snapshot) => {
       if (snapshot.val() === null) {
+        number = session.phoneNumber.replace(/^(\+91)/, "");
         querybaseRef.push({
-          number: session.phoneNumber,
+          number: number,
           user_id: session.uid,
           passcode: $scope.strongSecret,
           name: $scope.name,
@@ -436,6 +437,19 @@ app.controller("paymentController", /*@ngInject*/ function($scope, $location, se
 });
 
 
-app.controller("billingController", /*@ngInject*/ function($scope, $location, sessionService) {
+app.controller("billingController", /*@ngInject*/ function($scope, $http, $location, sessionService) {
   $scope.session = sessionService.getSession();
+
+  const phoneNumber = $scope.session.phoneNumber;
+
+  $http.get(`https://api.plivo.com/v1/Account/MANWQ0MMY2MTMZY2MYYJ/Call?call_direction=outbound&from_number=${phoneNumber}`, {
+    headers: {
+      'Authorization': 'Basic TUFOV1EwTU1ZMk1UTVpZMk1ZWUo6WmpBNVkyWTVNREUzWkRBek0ySm1PVGd3T1RjMk1UYzROamM0TmpreQ=='
+    }
+  }).success(function(data) {
+    console.log(data);
+
+  }).error(function(e) {
+    console.log(e);
+  });
 });
