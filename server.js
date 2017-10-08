@@ -16,4 +16,4 @@ app.get('*', function(req, res) {
     res.sendfile('./public/index.html');
 });
 
-app.listen(8080);
+app.listen(process.env.PORT || 5000);
