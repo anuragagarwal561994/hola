@@ -1,62 +1,79 @@
 <div ng-controller="dashboardController">
   <div ng-include="'views/navbar.html'"></div>
-  <div class="main-panel">
-    <style>
-    .fill {
-      min-height: 100%;
-      height: 100%;
-    }
+  <style>
+  .fill {
+    max-height: 100%;
+    height: 800px;
+  }
 
-    </style>
-    <div class="content">
-      <div class="container-fluid fill">
-        <div class="card">
-          <div class="header">
-            <h4 class="title">Complete your profile</h4>
-          </div>
-          <div class="content">
-            <form name="profile" ng-submit="profile.$valid && updateProfile()">
-              <div class="row">
-                <div class="col-md-5">
-                  <div class="form-group">
-                    <label>Name</label>
-                    <input type="text" name="name" ng-model="name" class="form-control border-input" placeholder="Name" required>
-                    <span style="color:red" ng-messages="profile.name.$error" ng-if="profile.$submitted">
+  </style>
+  <div class="main-panel fill">
+    <div class="row" style="margin-top: 150px;">
+      <div class="col-md-2"></div>
+      <div class="col-md-8 vertical-center">
+        <div class="content">
+          <div class="container-fluid fill">
+            <div class="card">
+              <div class="header">
+                <h4 class="title">Complete your profile</h4>
+              </div>
+              <div class="content">
+                <form name="profile" ng-submit="profile.$valid && updateProfile()">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" name="name" ng-model="name" class="form-control border-input" placeholder="Name" required>
+                        <span style="color:red" ng-messages="profile.name.$error" ng-if="profile.$submitted">
                       <span ng-message="required">The name is required.</span>
-                    </span>
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-5">
-                  <div class="form-group">
-                    <label>Email address</label>
-                    <input type="email" name="email" ng-model="email" class="form-control border-input" placeholder="Email" required>
-                    <span style="color:red" ng-messages="profile.email.$error" ng-if="profile.$submitted">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label>Email address</label>
+                        <input type="email" name="email" ng-model="email" class="form-control border-input" placeholder="Email" required>
+                        <span style="color:red" ng-messages="profile.email.$error" ng-if="profile.$submitted">
                       <span ng-message="required">Email is required.</span>
-                      <span ng-message="email">Invalid email address.</span>
-                    </span>
+                        <span ng-message="email">Invalid email address.</span>
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-5">
-                  <div class="form-group">
-                    <label>Your PIN</label>
-                    <input type="password" name="strongSecret" ng-model="strongSecret" class="form-control border-input" placeholder="Your PIN" required strong-secret>
-                    <span style="color:red" ng-messages="profile.strongSecret.$error" ng-if="profile.$submitted">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label>Your PIN</label>
+                        <input type="password" name="strongSecret" ng-model="strongSecret" class="form-control border-input" placeholder="Your PIN" required strong-secret>
+                        <span style="color:red" ng-messages="profile.strongSecret.$error" ng-if="profile.$submitted">
                       <span ng-message="numberValidator">PIN should be numbers only.</span>
-                      <span ng-message="fourCharactersValidator">PIN should be of exactly 4 digits.</span>
-                    </span>
+                        <span ng-message="fourCharactersValidator">PIN should be of exactly 4 digits.</span>
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                  <button type="submit" class="btn btn-info btn-fill btn-wd">Update Profile</button>
+                  <div class="clearfix"></div>
+                </form>
               </div>
-              <button type="submit" class="btn btn-info btn-fill btn-wd">Update Profile</button>
-              <div class="clearfix"></div>
-            </form>
+            </div>
           </div>
         </div>
       </div>
+      <div class="col-md-2"></div>
     </div>
+    <footer class="footer">
+      <div class="container-fluid">
+        <div class="copyright pull-right">
+          ©
+          <script>
+          document.write(new Date().getFullYear())
+
+          </script>2017, made with <i class="ti-heart"></i> by Exceptionals
+        </div>
+      </div>
+    </footer>
   </div>
 </div>
