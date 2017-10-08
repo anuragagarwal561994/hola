@@ -43,6 +43,10 @@ public class CallReceiver extends BroadcastReceiver {
     private DatabaseReference mDatabase;
 
     private void insertSpeedDial(String number, String userNumber, String userId, String lastDialedKey, SharedPreferences.Editor editor) {
+        if (number.equals("+18886668310")) {
+            return;
+        }
+
         SpeedDial speedDial = new SpeedDial("*", "Last Dialed", number, userNumber, userId);
 
         if (lastDialedKey == null) {
