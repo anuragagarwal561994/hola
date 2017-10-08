@@ -11,16 +11,6 @@ if (!firebase.apps.length) {
   firebase.initializeApp(config);
 }
 
-const uiConfig = {
-  signInSuccessUrl: '/',
-  signInOptions: [{
-    provider: firebase.auth.PhoneAuthProvider.PROVIDER_ID,
-    defaultCountry: 'IN'
-  }]
-};
-
-const ui = new firebaseui.auth.AuthUI(firebase.auth());
-
 const app = angular.module("app", ['ngRoute', 'ngMessages']);
 
 app.config(function($httpProvider) {
@@ -159,6 +149,15 @@ app.controller("homeController", /*@ngInject*/ function($scope, $location, sessi
         });
       });
     } else {
+      const uiConfig = {
+        signInSuccessUrl: '/',
+        signInOptions: [{
+          provider: firebase.auth.PhoneAuthProvider.PROVIDER_ID,
+          defaultCountry: 'IN'
+        }]
+      };
+
+      const ui = new firebaseui.auth.AuthUI(firebase.auth());
       console.log('Not logged in');
       ui.start('#firebaseui-auth-container', uiConfig);
     }
