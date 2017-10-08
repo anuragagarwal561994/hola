@@ -10,7 +10,7 @@ var config = {
 };
 
 if (!firebase.apps.length) {
-    firebase.initializeApp(config);
+  firebase.initializeApp(config);
 }
 
 const uiConfig = {
@@ -23,13 +23,13 @@ const uiConfig = {
 
 const ui = new firebaseui.auth.AuthUI(firebase.auth());
 
-const app = angular.module("app", ['ngRoute']);
+const app = angular.module("app", ['ngRoute', 'ngMessages']);
 
 app.config(function($httpProvider) {
   $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 });
 
-app.config(/*@ngInject*/function($routeProvider) {
+app.config( /*@ngInject*/ function($routeProvider) {
   $routeProvider.when('/', {
     controller: 'homeController',
     templateUrl: 'views/home.html'
@@ -60,30 +60,33 @@ app.service('sessionService', () => {
     resetSession: function() {
       session = {};
     },
-    getSession : function() {
+    getSession: function() {
       return session;
     },
-    setSession : function(_session) {
+    setSession: function(_session) {
       session = _session;
     }
   }
 });
 
-app.run(/*@ngInject*/function($rootScope, $timeout, $location, sessionService){
+app.run( /*@ngInject*/ function($rootScope, $timeout, $route, $window, $location, sessionService) {
 
   $rootScope.stateIsLoading = false;
-  $rootScope.$on( "$routeChangeStart", function(event, next, current) {
+  $rootScope.$on("$routeChangeStart", function(event, next, current) {
     $rootScope.stateIsLoading = true;
+  });
+
+  $rootScope.$on("$locationChangeStart", function(event, next, current) {
+    var path = $location.path();
+    console.log('New routing called!');
 
     let session = sessionService.getSession();
-    console.log(session);
 
     if (!session.hasOwnProperty('authenticated') || session.authenticated === false) {
+      console.log('here');
       $location.path("/");
-    } else if (!session.hasOwnProperty('totp') || session.totp === false) {
-      $location.path("/totp");
     } else {
-      $location.path(next.$$route['originalPath']);
+      $location.path(path);
     }
   });
 
@@ -100,7 +103,8 @@ app.run(/*@ngInject*/function($rootScope, $timeout, $location, sessionService){
 });
 
 
-app.controller("homeController", /*@ngInject*/function($scope, $location, sessionService) {
+app.controller("homeController", /*@ngInject*/ function($scope, $location, sessionService) {
+  console.log($location.path())
   firebase.auth().onAuthStateChanged(function(user) {
     console.log(user);
     if (user) {
@@ -114,42 +118,46 @@ app.controller("homeController", /*@ngInject*/function($scope, $location, sessio
       const totp = user.totp;
 
       user.getIdToken().then((accessToken) => {
-        const session = {
-          displayName: displayName,
-          email: email,
-          emailVerified: emailVerified,
-          phoneNumber: phoneNumber,
-          photoURL: photoURL,
-          uid: uid,
-          accessToken: accessToken,
-          providerData: providerData,
-          authenticated: true,
-          activePage: 'dashboard',
-          totp: totp
-        };
+        var ref = firebase.database().ref("totp");
 
-        sessionService.setSession(session);
-        $location.path('/dashboard');
-        $scope.$apply();
+        ref.orderByChild('number').equalTo(phoneNumber).once('value')
+          .then(function(snapshot) {
+            console.log(snapshot.val());
+            var totp = snapshot.child("totp").val();
+            const session = {
+              displayName: displayName,
+              email: email,
+              emailVerified: emailVerified,
+              phoneNumber: phoneNumber,
+              photoURL: photoURL,
+              uid: uid,
+              accessToken: accessToken,
+              providerData: providerData,
+              authenticated: true,
+              activePage: 'dashboard',
+              totp: totp
+            };
+
+            sessionService.setSession(session);
+            $location.path('/dashboard');
+            $scope.$apply();
+          });
       });
     } else {
       console.log('Not logged in');
       ui.start('#firebaseui-auth-container', uiConfig);
     }
   }, function(error) {
-      console.log(error);
-    });
+    console.log(error);
+  });
 });
 
-app.controller("navController", /*@ngInject*/function($scope, $location, sessionService) {
+app.controller("navController", /*@ngInject*/ function($scope, $location, sessionService) {
   let session = sessionService.getSession();
   $scope.session = session;
 
-  console.log(session);
-
   $scope.goto = (path, type) => {
     session['activePage'] = type;
-    $scope.session = session;
     sessionService.setSession(session);
     $location.path(path);
   }
@@ -158,29 +166,92 @@ app.controller("navController", /*@ngInject*/function($scope, $location, session
     firebase.auth().signOut().then(function() {
       console.log('Signed Out');
       sessionService.resetSession();
+      $location.path("/");
     }, function(error) {
       console.error('Sign Out Error', error);
       sessionService.resetSession();
+      $location.path("/");
+    });
+  }
+});
+
+app.directive('strongSecret', function() {
+  return {
+    // require NgModelController, i.e. require a controller of ngModel directive
+    require: 'ngModel',
+
+    // create linking function and pass in our NgModelController as a 4th argument
+    link: function(scope, element, attr, ctrl) {
+      function customValidator(ngModelValue) {
+        console.log(ngModelValue);
+        // check if contains number
+        // if it does contain number, set our custom `numberValidator`  to valid/true
+        // otherwise set it to non-valid/false
+        if (/^\d+$/.test(ngModelValue)) {
+          console.log('Here1');
+          ctrl.$setValidity('numberValidator', true);
+        } else {
+          console.log('Here2');
+          ctrl.$setValidity('numberValidator', false);
+        }
+
+        if (ngModelValue.length === 4) {
+          console.log('Here3');
+          ctrl.$setValidity('fourCharactersValidator', true);
+        } else {
+          console.log('Here4');
+          ctrl.$setValidity('fourCharactersValidator', false);
+        }
+
+        // we need to return our ngModelValue, to be displayed to the user(value of the input)
+        return ngModelValue;
+      }
+
+      ctrl.$parsers.push(customValidator);
+    }
+  };
+});
+
+
+app.controller("totpController", /*@ngInject*/ function($scope, $location, sessionService) {
+  $scope.session = sessionService.getSession();
+});
+
+
+app.controller("speeddialController", /*@ngInject*/ function($scope, $location, sessionService) {
+  $scope.session = sessionService.getSession();
+});
+
+
+app.controller("dashboardController", /*@ngInject*/ function($scope, $location, sessionService) {
+  $scope.session = sessionService.getSession();
+
+  $scope.name = $scope.session.displayName;
+  $scope.email = $scope.session.email;
+  $scope.strongSecret = $scope.session.totp;
+
+  $scope.updateProfile = () => {
+    const databaseRef = firebase.database().ref().child('totp');
+    const querybaseRef = querybase.ref(databaseRef, ['number', 'user_id']);
+
+    let session = sessionService.getSession();
+
+    querybaseRef.push({
+      number: session.phoneNumber,
+      user_id: session.uid,
+      pascode: $scope.strongSecret,
+      name: $scope.name,
+      email: $scope.email
     });
   }
 });
 
 
-app.controller("speeddialController", /*@ngInject*/function($scope, $location, sessionService) {
+app.controller("paymentController", /*@ngInject*/ function($scope, $location, sessionService) {
   $scope.session = sessionService.getSession();
 });
 
 
-app.controller("dashboardController", /*@ngInject*/function($scope, $location, sessionService) {
-  $scope.session = sessionService.getSession();
-});
-
-
-app.controller("paymentController", /*@ngInject*/function($scope, $location, sessionService) {
-  $scope.session = sessionService.getSession();
-});
-
-
-app.controller("billingController", /*@ngInject*/function($scope, $location, sessionService) {
+app.controller("billingController", /*@ngInject*/ function($scope, $location, sessionService) {
   $scope.session = sessionService.getSession();
 });

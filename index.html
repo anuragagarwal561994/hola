@@ -1,35 +1,39 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Hola - Your emergency contact</title>
-    <meta name=viewport content="width=device-width, initial-scale=1">
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <link href="css/style.min.css" rel="stylesheet" />
-    <style>
-      [ng\:cloak], [ng-cloak], .ng-cloak {
-        display: none;
-      }
-    </style>
-    <!--[if lt IE 9]><script src="http://cdnjs.cloudflare.com/ajax/libs/es5-shim/2.0.8/es5-shim.min.js"></script><![endif]-->
-  </head>
-  <body ng-app="app" ng-cloak>
-    <div class="ui container">
-      <div class="ui one column centered grid">
-        <div ng-if="stateIsLoading">
-          <div class="column">
-            <img class="loader" src="http://www.downgraf.com/wp-content/uploads/2014/09/01-progress.gif"/>
-          </div>
-        </div>
-      </div>
+
+<head>
+  <title>Hola - Your emergency contact</title>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <link href="css/style.min.css" rel="stylesheet" />
+  <style>
+  [ng\:cloak],
+  [ng-cloak],
+  .ng-cloak {
+    display: none;
+  }
+
+  </style>
+  <!--[if lt IE 9]><script src="http://cdnjs.cloudflare.com/ajax/libs/es5-shim/2.0.8/es5-shim.min.js"></script><![endif]-->
+</head>
+
+<body ng-app="app" ng-cloak>
+  <div class="text-center">
+    <div ng-if="stateIsLoading">
+      <img class="loader" src="http://www.downgraf.com/wp-content/uploads/2014/09/01-progress.gif" />
     </div>
-    <div ng-if="!stateIsLoading" ng-view></div>
-    <script src="https://www.gstatic.com/firebasejs/4.5.0/firebase.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular-route.js"></script>
-    <script src="https://cdn.firebase.com/libs/firebaseui/2.4.0/firebaseui.js"></script>
-    <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/2.4.0/firebaseui.css" />
-    <script src="js/renderer.js"></script>
-    <script src="js/custom.js"></script>
-    <script src="js/semantic.min.js"></script>
-  </body>
+  </div>
+  <div ng-if="!stateIsLoading" ng-view></div>
+  <script src="https://www.gstatic.com/firebasejs/4.5.0/firebase.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular-route.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-messages/1.6.6/angular-messages.js"></script>
+  <script src="https://cdn.firebase.com/libs/firebaseui/2.4.0/firebaseui.js"></script>
+  <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/2.4.0/firebaseui.css" />
+  <script src="https://unpkg.com/querybase@0.6.0"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/custom.js"></script>
+  <script src="js/semantic.min.js"></script>
+</body>
+
 </html>
