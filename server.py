@@ -82,7 +82,7 @@ def main_menu():
     option = request.form.get('Digits')
 
     to_call = firebaseClient.get('/speed_dials', None, params={
-        'user_number': phone_number,
+        'user_number': '+91' + phone_number,
         'key_choice': option,
     })
 
@@ -95,7 +95,11 @@ def main_menu():
     response.addSpeak('Connecting %s' % to_call['name'])
     params = {'callerId': phone_number}
     d = response.addDial(**params)
-    d.addNumber(to_call['number'])
+
+    if to_call['number'].startswith('+91'):
+        d.addNumber(to_call['number'])
+    else:
+        d.addNumber('+91' + to_call['number'])
 
     return Response(str(response), mimetype='text/xml')
 
