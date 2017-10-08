@@ -1,8 +1,13 @@
 package com.google.firebase.quickstart.auth;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -22,8 +27,20 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.MultiplePermissionsReport;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+import com.karumi.dexter.listener.single.PermissionListener;
 
+import android.Manifest;
+
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+
 
 public class PhoneAuthActivity extends AppCompatActivity implements
         View.OnClickListener {
@@ -62,9 +79,30 @@ public class PhoneAuthActivity extends AppCompatActivity implements
     private Button mResendButton;
     private Button mSignOutButton;
 
+    public static final String PREFS_NAME = "FirebasePrefFile";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Dexter.withActivity(this)
+                .withPermissions(
+                        Manifest.permission.PROCESS_OUTGOING_CALLS,
+                        Manifest.permission.READ_PHONE_STATE,
+                        Manifest.permission.INTERNET
+                )
+                .withListener(new MultiplePermissionsListener() {
+                    @Override
+                    public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
+
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> list, PermissionToken permissionToken) {
+
+                    }
+                }).check();
+
         setContentView(R.layout.activity_phone_auth);
 
         // Restore instance state
@@ -267,6 +305,12 @@ public class PhoneAuthActivity extends AppCompatActivity implements
 
     private void signOut() {
         mAuth.signOut();
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.remove("user_uuid");
+        editor.remove("user_number");
+        editor.remove("last_dialed_key");
+        editor.apply();
         updateUI(STATE_INITIALIZED);
     }
 
@@ -351,6 +395,12 @@ public class PhoneAuthActivity extends AppCompatActivity implements
             mVerificationField.setText(null);
 
             mStatusText.setText(R.string.signed_in);
+            SharedPreferences settings = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putString("user_uuid", user.getUid());
+            editor.putString("user_number", user.getPhoneNumber());
+            editor.apply();
+
             mDetailText.setText(getString(R.string.firebase_status_fmt, user.getUid()));
         }
     }
