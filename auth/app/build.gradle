@@ -56,6 +56,9 @@ dependencies {
     // Firebase Authentication
     compile 'com.google.firebase:firebase-auth:11.4.2'
 
+    // Firebase Database
+    compile 'com.google.firebase:firebase-database:11.4.2'
+
     // Google Sign In SDK (only required for Google Sign In)
     compile 'com.google.android.gms:play-services-auth:11.4.2'
 
