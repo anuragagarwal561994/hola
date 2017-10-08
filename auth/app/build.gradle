@@ -81,6 +81,8 @@ dependencies {
         transitive = true
     }
 
+    compile 'com.karumi:dexter:4.1.0'
+
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
     androidTestCompile 'com.android.support.test:runner:0.5'
 }
